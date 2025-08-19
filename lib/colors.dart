@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/material.dart';
 
 //const backgroundColor = Color.fromRGBO(19, 28, 33,1);
 const backgroundColor = Color.fromRGBO(255, 255, 255, 1); // pure white
@@ -19,3 +20,4 @@ const senderMessageColor = Color.fromRGBO(
   230,
   1,
 ); // soft white / greyish white
+const greyColor = Colors.grey;
