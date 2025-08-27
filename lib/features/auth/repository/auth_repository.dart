@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/features/auth/screens/otp_screen.dart';
+import 'package:whatsapp_ui/features/auth/screens/user_information_screen.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -78,32 +79,32 @@ class AuthRepository {
     }
   }
 
-  // Method to verify OTP
+  // ✅ Final verifyOTP function (cleaned-up)
   Future<void> verifyOTP({
     required BuildContext context,
     required String verificationId,
     required String userOTP,
   }) async {
     try {
-      print('Verifying OTP: $userOTP for verificationId: $verificationId'); // Debug log
-      
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: userOTP,
       );
 
-      UserCredential userCredential = await auth.signInWithCredential(credential);
-      print('OTP verification successful! UID: ${userCredential.user?.uid}'); // Debug log
-      
-      // Navigate to home screen or handle success
-      // Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-      
+      await auth.signInWithCredential(credential);
+
+      // ✅ Navigate to home screen after successful OTP
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        UserInformationScreen.routeName, // <-- change this to your home screen route
+        (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
-      print('OTP verification failed: ${e.code} - ${e.message}'); // Debug log
       showSnakBar(
         context: context,
-        content: e.message ?? "Invalid OTP",
+        content: "OTP verification failed: ${e.message}",
       );
     }
   }
 }
+

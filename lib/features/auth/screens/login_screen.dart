@@ -64,6 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         title: const Text("Enter your Phone number"),
         elevation: 0,
         backgroundColor: blackColor,
+        centerTitle: true, // 👈 this makes the title centered
       ),
       body: Padding(
         padding: const EdgeInsets.all(18.0),
