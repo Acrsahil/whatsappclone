@@ -24,7 +24,8 @@ const senderMessageColor = Color.fromRGBO(
   230,
   1,
 ); // soft white / greyish white
-const greyColor = Colors.grey;
+//const greyColor = Colors.grey;
+const greyColor = Color(0xFFF0F0F0); // very light grey
 const blackColor = Colors.black;
 const whiteColor = Colors.white;
 final h = TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold);

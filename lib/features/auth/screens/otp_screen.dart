@@ -6,9 +6,8 @@ import 'package:whatsapp_ui/features/auth/repository/auth_controller.dart';
 
 class OTPScreen extends ConsumerWidget {
   static const String routeName = '/otp-screen';
-  final String verificationId; // 👈 keep this
+  final String verificationId;
 
-  // 👈 constructor now requires verificationId
   const OTPScreen({Key? key, required this.verificationId}) : super(key: key);
 
   void verifyOTP(WidgetRef ref, BuildContext context, String userOTP) {
@@ -20,42 +19,112 @@ class OTPScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    String otp = ''; // 👈 track user input
 
     return Scaffold(
+      backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text("Verifying your number"),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        backgroundColor: blackColor,
-        centerTitle: true,
+        iconTheme: const IconThemeData(color: blackColor),
       ),
       body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              "We have sent an SMS with a code.",
-              style: TextStyle(color: blackColor),
-            ),
-            SizedBox(
-              width: size.width * 0.5,
-              child: TextField(
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: blackColor),
-                decoration: const InputDecoration(
-                  hintText: '- - - - - -',
-                  hintStyle: TextStyle(fontSize: 30),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // OTP icon
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent.withOpacity(0.1),
+                  shape: BoxShape.circle,
                 ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (val) {
-                  if(val.length == 6){
-                  verifyOTP(ref, context, val.trim());
-                  }
-                },
+                child: const Icon(
+                  Icons.sms_outlined,
+                  size: 48,
+                  color: Colors.blueAccent,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+
+              const Text(
+                "Verify your number",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: blackColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "We have sent an SMS with a 6-digit code.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: blackColor),
+              ),
+              const SizedBox(height: 32),
+
+              // OTP TextField
+              SizedBox(
+                width: size.width * 0.6,
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    letterSpacing: 12,
+                    color: blackColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '------',
+                    hintStyle: const TextStyle(
+                      fontSize: 28,
+                      letterSpacing: 12,
+                      color: blackColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: greyColor,
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: 6,
+                  onChanged: (val) {
+                    if (val.length == 6) {
+                      verifyOTP(ref, context, val.trim());
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Resend OTP
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Didn't receive the code? ",
+                    style: TextStyle(color: blackColor),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // TODO: trigger resend OTP
+                    },
+                    child: const Text(
+                      "Resend",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

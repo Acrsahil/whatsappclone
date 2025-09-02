@@ -15,7 +15,7 @@ import 'package:whatsapp_ui/utils/responsive_layout.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // For development on Spark (free) plan
   if (kDebugMode) {
     await FirebaseAuth.instance.setSettings(
@@ -23,13 +23,13 @@ void main() async {
     );
     print('Firebase Auth: App verification disabled for testing');
   }
-  
+
   runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

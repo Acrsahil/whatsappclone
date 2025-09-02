@@ -26,7 +26,7 @@ class ChatAppBar extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.01,
               ),
               const Text(
-                'Rivaan Ranawat',
+                'Sahil Acharya',
                 style: TextStyle(
                   fontSize: 18,
                 ),

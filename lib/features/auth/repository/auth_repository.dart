@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whatsapp_ui/common/repositories/common_firebase_storage_repository.dart';
 import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/features/auth/screens/otp_screen.dart';
 import 'package:whatsapp_ui/features/auth/screens/user_information_screen.dart';
@@ -21,7 +24,7 @@ class AuthRepository {
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
       print('Starting phone verification for: $phoneNumber'); // Debug log
-      
+
       await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -32,10 +35,7 @@ class AuthRepository {
             // Navigate to home screen or handle success
           } catch (e) {
             print('Error during automatic sign in: $e');
-            showSnakBar(
-              context: context,
-              content: "Auto sign-in failed: $e",
-            );
+            showSnakBar(context: context, content: "Auto sign-in failed: $e");
           }
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -48,10 +48,10 @@ class AuthRepository {
         codeSent: (String verificationId, int? resendToken) {
           print('Code sent! VerificationId: $verificationId'); // Debug log
           print('Navigating to OTP screen...'); // Debug log
-          
+
           // Navigate to OTP screen and pass the verificationId
           Navigator.pushNamed(
-            context, 
+            context,
             OTPScreen.routeName,
             arguments: {
               'verificationId': verificationId,
@@ -60,7 +60,9 @@ class AuthRepository {
           );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          print('Auto retrieval timeout for verificationId: $verificationId'); // Debug log
+          print(
+            'Auto retrieval timeout for verificationId: $verificationId',
+          ); // Debug log
         },
         timeout: const Duration(seconds: 60),
       );
@@ -72,10 +74,7 @@ class AuthRepository {
       );
     } catch (e) {
       print('General exception: $e'); // Debug log
-      showSnakBar(
-        context: context,
-        content: "Unexpected error: $e",
-      );
+      showSnakBar(context: context, content: "Unexpected error: $e");
     }
   }
 
@@ -96,7 +95,8 @@ class AuthRepository {
       // ✅ Navigate to home screen after successful OTP
       Navigator.pushNamedAndRemoveUntil(
         context,
-        UserInformationScreen.routeName, // <-- change this to your home screen route
+        UserInformationScreen
+            .routeName, // <-- change this to your home screen route
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
@@ -106,5 +106,37 @@ class AuthRepository {
       );
     }
   }
-}
 
+  Future<void> saveUserDataToFirebase({
+    required String name,
+    required File? profilePic,
+    required Ref ref, // Use Ref instead of ProviderRef
+    required BuildContext context, // Non-nullable
+  }) async {
+    try {
+      final String uid = auth.currentUser!.uid;
+      String photoUrl =
+          'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+
+      if (profilePic != null) {
+        // Use ref.read() to access your storage repository
+        photoUrl = await ref
+            .read(CommonFirebaseStorageRepositoryProvider)
+            .storeFileToFirebase('profilePic/$uid', profilePic);
+      }
+
+      // Save user data to Firestore
+      await firestore.collection('users').doc(uid).set({
+        'name': name,
+        'uid': uid,
+        'profilePic': photoUrl,
+        'phoneNumber': auth.currentUser!.phoneNumber,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      showSnakBar(context: context, content: "Profile saved successfully!");
+    } catch (e) {
+      showSnakBar(context: context, content: e.toString());
+    }
+  }
+}
